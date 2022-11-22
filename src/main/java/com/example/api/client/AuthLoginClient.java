@@ -1,7 +1,6 @@
 package com.example.api.client;
 
 import com.example.User;
-import com.google.gson.Gson;
 import io.qameta.allure.Step;
 import io.restassured.path.json.JsonPath;
 import io.restassured.path.json.exception.JsonPathException;
@@ -14,48 +13,35 @@ public class AuthLoginClient {
     public static final String LOGIN = "/api/auth/login";
 
     @Step("Login")
-    public static Response login(String json) {
+    public static Response login(User user) {
         return given()
                 .header("Content-type", "application/json")
                 .and()
-                .body(json)
+                .body(user)
                 .when()
                 .post(LOGIN);
     }
 
-    @Step("Получение токена клиента")
-    public static String getUserToken(String json) {
-        Response response = AuthLoginClient.login(json);
+    private static String getAccessTokenFromResponse(Response response) {
         JsonPath jsonPath = new JsonPath(response.asString());
-        String token = "test test";
         try {
-            token = jsonPath.getString("accessToken");
+            String token = jsonPath.getString("accessToken");
+            return token.split(" ")[1];
         } catch (JsonPathException e) {
-            if (response.getStatusCode() == 429) {
-                throw new RuntimeException("Слишком много запросов.");
-            }
-            System.out.printf("response: %d, %s, %s%n", response.getStatusCode(), response.getStatusLine(), response.asString());
             System.out.println(e.getMessage());
         }
-        return token.split(" ")[1];
+        return null;
     }
 
-    public static String getRequestBodyWithBadEmail(User user) {
-        user.setEmail("test@example.com");
-        Gson gson = new Gson();
-        return gson.toJson(user);
-    }
-
-    public static String getRequestBodyWithBadPassword(User user) {
-        user.setPassword("password");
-        Gson gson = new Gson();
-        return gson.toJson(user);
-    }
-
-    public static String getRequestBodyWithBadEmailAndPassword(User user) {
-        user.setEmail("test@example.com");
-        user.setPassword("password");
-        Gson gson = new Gson();
-        return gson.toJson(user);
+    @Step("Получение токена клиента")
+    public static String getUserToken(User user) {
+        Response response = AuthLoginClient.login(user);
+        switch (response.getStatusCode()) {
+            case 401:
+                return null;
+            case 429:
+                throw new RuntimeException("Слишком много запросов.");
+        }
+        return getAccessTokenFromResponse(response);
     }
 }

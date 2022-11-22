@@ -18,7 +18,7 @@ public class LoginTest extends BaseTest {
     private User user;
 
     @Before
-    public void createTestUser() throws InterruptedException {
+    public void createTestUser() {
         user = new User();
         AuthRegisterClient.createUserBeforeTests(user);
     }
@@ -31,7 +31,7 @@ public class LoginTest extends BaseTest {
     @Test
     @DisplayName("Авторизация пользователя")
     public void loginTest() {
-        Response response = AuthLoginClient.login(AuthRegisterClient.getRequestBodyForRegistration(user));
+        Response response = AuthLoginClient.login(user);
         String token = response
                 .then()
                 .assertThat()
@@ -45,7 +45,8 @@ public class LoginTest extends BaseTest {
     @Test
     @DisplayName("Авторизация с неправильной почтой")
     public void loginWithWrongEmailTest() {
-        Response response = AuthLoginClient.login(AuthLoginClient.getRequestBodyWithBadEmail(user));
+        user.setEmail("test@example.com");
+        Response response = AuthLoginClient.login(user);
         String messageWithBadLogin = response
                 .then()
                 .assertThat()
@@ -59,7 +60,8 @@ public class LoginTest extends BaseTest {
     @Test
     @DisplayName("Авторизация с неправильным паролем")
     public void loginWithWrongPasswordTest() {
-        Response response = AuthLoginClient.login(AuthLoginClient.getRequestBodyWithBadPassword(user));
+        user.setPassword("password");
+        Response response = AuthLoginClient.login(user);
         String messageWithBadPassword = response
                 .then()
                 .assertThat()
@@ -73,7 +75,9 @@ public class LoginTest extends BaseTest {
     @Test
     @DisplayName("Авторизация с неправильными почтой и паролем")
     public void loginWithWrongEmailAndPasswordTest() {
-        Response response = AuthLoginClient.login(AuthLoginClient.getRequestBodyWithBadEmailAndPassword(user));
+        user.setEmail("test@example.com");
+        user.setPassword("password");
+        Response response = AuthLoginClient.login(user);
         String messageWithBadEmailPassword = response
                 .then()
                 .assertThat()

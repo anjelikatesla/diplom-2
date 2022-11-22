@@ -1,8 +1,8 @@
 package com.example;
 
+import com.example.api.client.AuthRegisterClient;
 import com.example.api.client.AuthUserClient;
 import com.example.api.client.OrdersClient;
-import com.example.api.client.AuthRegisterClient;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.After;
 import org.junit.Before;
@@ -17,7 +17,7 @@ public class CreateOrderTest extends BaseTest {
     private Ingredient ingredients;
 
     @Before
-    public void createTestUser() throws InterruptedException {
+    public void createTestUser() {
         User user = new User();
         ingredients = new Ingredient();
         AuthRegisterClient.createUserBeforeTests(user);

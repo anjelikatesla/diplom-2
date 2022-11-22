@@ -20,7 +20,7 @@ public class UserOrderListTest extends BaseTest {
     private Ingredient ingredients;
 
     @Before
-    public void createTestUser() throws InterruptedException {
+    public void createTestUser() {
         ingredients = new Ingredient();
         User user = new User();
         AuthRegisterClient.createUserBeforeTests(user);

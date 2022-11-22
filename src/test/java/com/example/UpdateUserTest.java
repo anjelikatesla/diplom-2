@@ -15,7 +15,7 @@ public class UpdateUserTest extends BaseTest {
     private User user;
 
     @Before
-    public void createTestUser() throws InterruptedException {
+    public void createTestUser() {
         user = new User();
         AuthRegisterClient.createUserBeforeTests(user);
     }
@@ -28,8 +28,10 @@ public class UpdateUserTest extends BaseTest {
     @Test
     @DisplayName("Изменение имени пользователя с авторизацией")
     public void updateNameWithAuthTest() {
+        user.setPassword(null);
+        user.setEmail(null);
         boolean success = AuthUserClient
-                .updateUser(AuthRegisterClient.userToken, AuthUserClient.getUserWithoutPasswordAndEmail(user))
+                .updateUser(AuthRegisterClient.userToken, user)
                 .then()
                 .assertThat()
                 .statusCode(200)
@@ -43,7 +45,7 @@ public class UpdateUserTest extends BaseTest {
     @DisplayName("Изменение почты пользователя с авторизацией")
     public void updateMailWithAuthTest() {
         boolean success = AuthUserClient
-                .updateUser(AuthRegisterClient.userToken, AuthUserClient.getUserForEmailChange(user))
+                .updateUser(AuthRegisterClient.userToken, user)
                 .then()
                 .assertThat()
                 .statusCode(200)
@@ -57,7 +59,7 @@ public class UpdateUserTest extends BaseTest {
     @DisplayName("Изменение пароля пользователя без авторизации")
     public void updatePasswordWithoutAuthTest() {
         String message = AuthUserClient
-                .updateUser("", AuthUserClient.getUserForPasswordChange(user))
+                .updateUser("", user)
                 .then()
                 .assertThat()
                 .statusCode(401)
@@ -71,7 +73,7 @@ public class UpdateUserTest extends BaseTest {
     @DisplayName("Изменение пароля пользователя с авторизацией")
     public void updatePasswordWithAuthTest() {
         boolean success = AuthUserClient
-                .updateUser(AuthRegisterClient.userToken, AuthUserClient.getUserForPasswordChange(user))
+                .updateUser(AuthRegisterClient.userToken, user)
                 .then()
                 .assertThat()
                 .statusCode(200)
@@ -85,7 +87,7 @@ public class UpdateUserTest extends BaseTest {
     @DisplayName("Изменение почты пользователя без авторизации")
     public void updateEmailWithoutAuthTest() {
         String message = AuthUserClient
-                .updateUser("", AuthUserClient.getUserForEmailChange(user))
+                .updateUser("", user)
                 .then()
                 .assertThat()
                 .statusCode(401)
@@ -98,8 +100,10 @@ public class UpdateUserTest extends BaseTest {
     @Test
     @DisplayName("Изменение имени пользователя без авторизации")
     public void updateNameWithoutAuthTest() {
+        user.setPassword(null);
+        user.setEmail(null);
         String message = AuthUserClient
-                .updateUser("", AuthUserClient.getUserWithoutPasswordAndEmail(user))
+                .updateUser("", user)
                 .then()
                 .assertThat()
                 .statusCode(401)

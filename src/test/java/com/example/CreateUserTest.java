@@ -1,6 +1,5 @@
 package com.example;
 
-import com.example.api.client.AuthLoginClient;
 import com.example.api.client.AuthRegisterClient;
 import com.example.api.client.AuthUserClient;
 import io.qameta.allure.junit4.DisplayName;
@@ -17,20 +16,19 @@ public class CreateUserTest extends BaseTest {
     private User user;
 
     @Before
-    public void before() throws InterruptedException {
+    public void before() {
         user = new User();
     }
 
     @After
-    public void deleteTestUser() {
-        AuthUserClient.deleteUser(AuthRegisterClient.userToken);
+    public void tearDown() {
+        AuthUserClient.deleteUser(user);
     }
 
     @Test
     @DisplayName("Создание пользователя")
     public void createUserTest() {
-        Response response = AuthRegisterClient.createUser(AuthRegisterClient.getRequestBodyForRegistration(user));
-        AuthRegisterClient.userToken = AuthLoginClient.getUserToken(AuthRegisterClient.getRequestBodyForRegistration(user));
+        Response response = AuthRegisterClient.createUser(user);
         response
                 .then()
                 .assertThat()
@@ -40,9 +38,8 @@ public class CreateUserTest extends BaseTest {
     @Test
     @DisplayName("Создание уже зарегистрированного пользователя")
     public void createTheSameUserTest() {
-        AuthRegisterClient.createUser(AuthRegisterClient.getRequestBodyForRegistration(user));
-        Response response = AuthRegisterClient.createUser(AuthRegisterClient.getRequestBodyForRegistration(user));
-        AuthRegisterClient.userToken = AuthLoginClient.getUserToken(AuthRegisterClient.getRequestBodyForRegistration(user));
+        AuthRegisterClient.createUser(user);
+        Response response = AuthRegisterClient.createUser(user);
         response
                 .then()
                 .assertThat()
@@ -55,7 +52,8 @@ public class CreateUserTest extends BaseTest {
     @Test
     @DisplayName("Создание пользователя без имени")
     public void createUserWithoutNameTest() {
-        Response response = AuthRegisterClient.createUser(AuthRegisterClient.getRequestBodyWithoutNameForRegistration(user));
+        user.setName(null);
+        Response response = AuthRegisterClient.createUser(user);
         String messageWithoutName = response
                 .then()
                 .assertThat()
@@ -69,7 +67,8 @@ public class CreateUserTest extends BaseTest {
     @Test
     @DisplayName("Создание пользователя без почты")
     public void createUserWithoutEmailTest() {
-        Response response = AuthRegisterClient.createUser(AuthRegisterClient.getRequestBodyWithoutEmailForRegistration(user));
+        user.setEmail(null);
+        Response response = AuthRegisterClient.createUser(user);
         String messageWithoutEmail = response
                 .then()
                 .assertThat()
@@ -83,7 +82,8 @@ public class CreateUserTest extends BaseTest {
     @Test
     @DisplayName("Создание пользователя без пароля")
     public void createUserWithoutPasswordTest() {
-        Response response = AuthRegisterClient.createUser(AuthRegisterClient.getRequestBodyWithoutPasswordForRegistration(user));
+        user.setPassword(null);
+        Response response = AuthRegisterClient.createUser(user);
         String messageWithoutPassword =
                 response
                         .then()

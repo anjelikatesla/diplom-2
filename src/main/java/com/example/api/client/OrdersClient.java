@@ -1,7 +1,6 @@
 package com.example.api.client;
 
 import com.example.Ingredient;
-import com.google.gson.Gson;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
 
@@ -12,7 +11,7 @@ public class OrdersClient {
     public static final String ORDERS = "/api/orders";
 
     @Step("Создание заказа")
-    public static Response order(String token, String body) {
+    public static Response order(String token, Ingredient body) {
         return given()
                 .header("Content-type", "application/json")
                 .auth().oauth2(token)
@@ -23,7 +22,7 @@ public class OrdersClient {
     }
 
     @Step("Создание заказа без авторизации")
-    public static Response createOrderWithoutLogin(String body) {
+    public static Response createOrderWithoutLogin(Ingredient body) {
         return given()
                 .header("Content-type", "application/json")
                 .and()
@@ -51,25 +50,22 @@ public class OrdersClient {
     }
 
     @Step("Получение тела с ингредиентами для позитивного запроса")
-    public static String positiveOrderBody(Ingredient ingredients) {
+    public static Ingredient positiveOrderBody(Ingredient ingredients) {
         ingredients.setIngredients(firstIngredient());
         ingredients.setIngredients(secondIngredient());
-        Gson gson = new Gson();
-        return gson.toJson(ingredients);
+        return ingredients;
     }
 
     @Step("Получение тела с ингредиентами для негативного запроса")
-    public static String negativeOrderBody(Ingredient ingredients) {
+    public static Ingredient negativeOrderBody(Ingredient ingredients) {
         ingredients.setIngredients(firstIngredient() + "200");
         ingredients.setIngredients(secondIngredient() + "3000");
-        Gson gson = new Gson();
-        return gson.toJson(ingredients);
+        return ingredients;
     }
 
     @Step("Получение тела без ингредиентов")
-    public static String orderBodyWithoutIngredients(Ingredient ingredients) {
-        Gson gson = new Gson();
-        return gson.toJson(ingredients);
+    public static Ingredient orderBodyWithoutIngredients(Ingredient ingredients) {
+        return ingredients;
     }
 
     @Step("Получение списка заказов")

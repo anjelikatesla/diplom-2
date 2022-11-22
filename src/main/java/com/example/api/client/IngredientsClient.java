@@ -8,6 +8,7 @@ import static io.restassured.RestAssured.given;
 public class IngredientsClient {
 
     public static final String INGREDIENTS = "/api/ingredients";
+
     @Step("Получение ингредиентов")
     public static Response ingredient(String token) {
         return given()
